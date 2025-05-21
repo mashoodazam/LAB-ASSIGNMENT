@@ -1,0 +1,86 @@
+package usermanagement;
+
+public class Admin {
+    String name;
+    void sendReminder() {}
+}
+
+public class Staff {
+    String name;
+    void scheduleReminder() {}
+}
+
+public class Customer {
+    String name;
+    String email;
+    String phone;
+}
+*package reminderhandling;
+
+import usermanagement.Customer;
+import notificationsystem.ChannelSelector;
+
+public class Reminder {
+    Customer customer;
+    String dueDate;
+    String message;
+}
+
+public class ReminderScheduler {
+    void schedule(Reminder reminder) {}
+}
+
+public class ManualReminderSender {
+    void send(Reminder reminder) {}
+}
+
+public class AutomaticReminderSender {
+    void autoSend() {}
+}
+package notificationsystem;
+
+public class EmailSender {
+    void sendEmail(String to, String message) {}
+}
+
+public class SMSSender {
+    void sendSMS(String phone, String message) {}
+}
+
+public class PushNotificationSender {
+    void sendPush(String userId, String message) {}
+}
+
+public class ChannelSelector {
+    void selectChannelAndSend(String channel, String contact, String message) {}
+}
+package remindertracking;
+
+import reminderhandling.Reminder;
+
+public class ReminderStatus {
+    String status; // e.g., Sent, Failed, Scheduled
+}
+
+public class ReminderHistory {
+    void log(Reminder reminder, String status) {}
+}
+package authentication;
+
+public class LoginManager {
+    boolean login(String username, String password) { return true; }
+}
+
+public class RoleChecker {
+    boolean hasPermission(String role, String action) { return true; }
+}
+package reporting;
+
+public class ReportGenerator {
+    void generateReminderReport() {}
+}
+
+public class ExportManager {
+    void exportAsCSV() {}
+    void exportAsPDF() {}
+}
