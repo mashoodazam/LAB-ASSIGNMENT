@@ -1,86 +1,112 @@
-package usermanagement;
+package paymentremindersystem;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.*;
 
-public class Admin {
-    String name;
-    void sendReminder() {}
-}
+public class PaymentReminderSystem extends JFrame {
 
-public class Staff {
-    String name;
-    void scheduleReminder() {}
-}
+    static class Customer {
+        String name;
+        String email;
+        double outstandingBalance;
 
-public class Customer {
-    String name;
-    String email;
-    String phone;
-}
-*package reminderhandling;
+        Customer(String name, String email, double outstandingBalance) {
+            this.name = name;
+            this.email = email;
+            this.outstandingBalance = outstandingBalance;
+        }
 
-import usermanagement.Customer;
-import notificationsystem.ChannelSelector;
+        @Override
+        public String toString() {
+            return name + " - $" + outstandingBalance;
+        }
+    }
 
-public class Reminder {
-    Customer customer;
-    String dueDate;
-    String message;
-}
+    private JList<Customer> customerJList;
+    private DefaultListModel<Customer> listModel;
+    private JTextArea reminderTextArea;
+    private JButton sendReminderButton;
 
-public class ReminderScheduler {
-    void schedule(Reminder reminder) {}
-}
+    private java.util.List<Customer> customers;
 
-public class ManualReminderSender {
-    void send(Reminder reminder) {}
-}
+    public PaymentReminderSystem() {
+        setTitle("Accounting Fee System - Payment Reminder");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setSize(600, 400);
+        setLocationRelativeTo(null);
 
-public class AutomaticReminderSender {
-    void autoSend() {}
-}
-package notificationsystem;
+        customers = new java.util.ArrayList<>();
+        customers.add(new Customer("Alice Johnson", "alice@example.com", 150.75));
+        customers.add(new Customer("Bob Smith", "bob@example.com", 0));
+        customers.add(new Customer("Charlie Davis", "charlie@example.com", 320.00));
+        customers.add(new Customer("Diana Moore", "diana@example.com", 0));
+        customers.add(new Customer("Evan Lee", "evan@example.com", 50.00));
 
-public class EmailSender {
-    void sendEmail(String to, String message) {}
-}
+        listModel = new DefaultListModel<>();
+        for (Customer c : customers) {
+            listModel.addElement(c);
+        }
 
-public class SMSSender {
-    void sendSMS(String phone, String message) {}
-}
+        customerJList = new JList<>(listModel);
+        customerJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-public class PushNotificationSender {
-    void sendPush(String userId, String message) {}
-}
+        JScrollPane listScrollPane = new JScrollPane(customerJList);
 
-public class ChannelSelector {
-    void selectChannelAndSend(String channel, String contact, String message) {}
-}
-package remindertracking;
+        reminderTextArea = new JTextArea();
+        reminderTextArea.setEditable(false);
+        JScrollPane textScrollPane = new JScrollPane(reminderTextArea);
 
-import reminderhandling.Reminder;
+        sendReminderButton = new JButton("Send Payment Reminder");
+        sendReminderButton.setEnabled(false);
 
-public class ReminderStatus {
-    String status; // e.g., Sent, Failed, Scheduled
-}
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, listScrollPane, textScrollPane);
+        splitPane.setDividerLocation(200);
 
-public class ReminderHistory {
-    void log(Reminder reminder, String status) {}
-}
-package authentication;
+        add(splitPane, BorderLayout.CENTER);
+        add(sendReminderButton, BorderLayout.SOUTH);
 
-public class LoginManager {
-    boolean login(String username, String password) { return true; }
-}
+        customerJList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                Customer selected = customerJList.getSelectedValue();
+                if (selected != null && selected.outstandingBalance > 0) {
+                    sendReminderButton.setEnabled(true);
+                    reminderTextArea.setText(generateReminderMessage(selected));
+                } else {
+                    sendReminderButton.setEnabled(false);
+                    reminderTextArea.setText("");
+                }
+            }
+        });
 
-public class RoleChecker {
-    boolean hasPermission(String role, String action) { return true; }
-}
-package reporting;
+        sendReminderButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Customer selected = customerJList.getSelectedValue();
+                if (selected != null && selected.outstandingBalance > 0) {
+                    JOptionPane.showMessageDialog(PaymentReminderSystem.this,
+                            "Payment reminder sent to " + selected.email,
+                            "Reminder Sent",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+    }
 
-public class ReportGenerator {
-    void generateReminderReport() {}
-}
+    private String generateReminderMessage(Customer c) {
+        return "To: " + c.email + "\n\n" +
+                "Dear " + c.name + ",\n\n" +
+                "Our records indicate that you have an outstanding balance of $" + c.outstandingBalance + ".\n" +
+                "Please arrange your payment at your earliest convenience.\n\n" +
+                "Thank you.\n";
+    }
 
-public class ExportManager {
-    void exportAsCSV() {}
-    void exportAsPDF() {}
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            PaymentReminderSystem app = new PaymentReminderSystem();
+            app.setVisible(true);
+        });
+    }
 }
